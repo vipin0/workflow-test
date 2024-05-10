@@ -1,4 +1,4 @@
-name: File Trigger Workflow
+ name: File Trigger Workflow
 
 on:
   push:
@@ -16,15 +16,45 @@ jobs:
 
       - name: Determine triggering file
         run: |
-          if [ -n "$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} -- a.yaml)" ]; then
+          changed_files=$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }})
+
+          if echo "$changed_files" | grep -q -E 'a.yaml'; then
             echo "File a.yaml triggered the action"
-          elif [ -n "$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} -- b.yaml)" ]; then
+          elif echo "$changed_files" | grep -q -E 'b.yaml'; then
             echo "File b.yaml triggered the action"
-          elif [ -n "$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} -- c.yaml)" ]; then
+          elif echo "$changed_files" | grep -q -E 'c.yaml'; then
             echo "File c.yaml triggered the action"
           else
             echo "None of the specified files triggered the action"
           fi
+
+# name: File Trigger Workflow
+
+# on:
+#   push:
+#     paths:
+#       - 'a.yaml'
+#       - 'b.yaml'
+#       - 'c.yaml'
+
+# jobs:
+#   determine_file:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v2
+
+#       - name: Determine triggering file
+#         run: |
+#           if [ -n "$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} -- a.yaml)" ]; then
+#             echo "File a.yaml triggered the action"
+#           elif [ -n "$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} -- b.yaml)" ]; then
+#             echo "File b.yaml triggered the action"
+#           elif [ -n "$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} -- c.yaml)" ]; then
+#             echo "File c.yaml triggered the action"
+#           else
+#             echo "None of the specified files triggered the action"
+#           fi
 
 
 
