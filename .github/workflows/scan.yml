@@ -1,51 +1,81 @@
-name: scan
+name: File Trigger Workflow
+
 on:
   push:
-    branches:
-      - main
-    # types:
-    #   - opened
-    #   - synchronize
     paths:
-      - index.html
-      - index2.html
-
-env:
-  paths: 'index.html, index2.html'
+      - 'a.yaml'
+      - 'b.yaml'
+      - 'c.yaml'
 
 jobs:
-  output_path:
+  determine_file:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Get changed files
-        id: changes
+      - name: Determine triggering file
         run: |
-          echo "files=$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | xargs)" >> $GITHUB_OUTPUT
+          if [ -n "$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} -- a.yaml)" ]; then
+            echo "File a.yaml triggered the action"
+          elif [ -n "$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} -- b.yaml)" ]; then
+            echo "File b.yaml triggered the action"
+          elif [ -n "$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} -- c.yaml)" ]; then
+            echo "File c.yaml triggered the action"
+          else
+            echo "None of the specified files triggered the action"
+          fi
 
-      - name: Determine triggering path and sonar project key
-        id: determine_path
-        shell: bash
-        run: |
-          # Show paths
-          echo "Paths: ${{ env.paths }}"
 
-          # Get the list of paths being monitored
-          monitored_paths=$(echo "${{ env.paths }}" | tr "," " ")
-          echo "Monitored paths: $monitored_paths"
-          echo "Changed files: ${{ steps.changes.outputs.files }}"
-          echo "If you see here files that you have not modified, please update your branch with changes from main."
 
-          # Loop through each path
-          for path in $monitored_paths
-          do
-            # Check if the modified files include this path
-            if echo "${{ steps.changes.outputs.files }}" | grep -q "$path"; then
-              # Set the output variable and exit the loop
-              echo "triggering_path is $path"
-              echo "triggering_path=$path" >> $GITHUB_OUTPUT
-              break
-            fi
-          done
+# name: scan
+# on:
+#   push:
+#     branches:
+#       - main
+#     # types:
+#     #   - opened
+#     #   - synchronize
+#     paths:
+#       - index.html
+#       - index2.html
+
+# env:
+#   paths: 'index.html, index2.html'
+
+# jobs:
+#   output_path:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
+
+#       - name: Get changed files
+#         id: changes
+#         run: |
+#           echo "files=$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.sha }} | xargs)" >> $GITHUB_OUTPUT
+
+#       - name: Determine triggering path and sonar project key
+#         id: determine_path
+#         shell: bash
+#         run: |
+#           # Show paths
+#           echo "Paths: ${{ env.paths }}"
+
+#           # Get the list of paths being monitored
+#           monitored_paths=$(echo "${{ env.paths }}" | tr "," " ")
+#           echo "Monitored paths: $monitored_paths"
+#           echo "Changed files: ${{ steps.changes.outputs.files }}"
+#           echo "If you see here files that you have not modified, please update your branch with changes from main."
+
+#           # Loop through each path
+#           for path in $monitored_paths
+#           do
+#             # Check if the modified files include this path
+#             if echo "${{ steps.changes.outputs.files }}" | grep -q "$path"; then
+#               # Set the output variable and exit the loop
+#               echo "triggering_path is $path"
+#               echo "triggering_path=$path" >> $GITHUB_OUTPUT
+#               break
+#             fi
+#           done
