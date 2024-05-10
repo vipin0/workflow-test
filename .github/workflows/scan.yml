@@ -6,7 +6,8 @@ on:
       - 'a.yaml'
       - 'b.yaml'
       - 'c.yaml'
-
+env:
+  FILES: a.yaml,b.yaml,c.yaml
 jobs:
   determine_file:
     runs-on: ubuntu-latest
@@ -16,17 +17,8 @@ jobs:
 
       - name: Determine triggering file
         run: |
-          changed_files=$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }})
-
-          if echo "$changed_files" | grep -q -E 'a.yaml'; then
-            echo "File a.yaml triggered the action"
-          elif echo "$changed_files" | grep -q -E 'b.yaml'; then
-            echo "File b.yaml triggered the action"
-          elif echo "$changed_files" | grep -q -E 'c.yaml'; then
-            echo "File c.yaml triggered the action"
-          else
-            echo "None of the specified files triggered the action"
-          fi
+            updated_artifact_file=$(git diff --name-only | python -c "import sys, os; print(','.join([file for file in sys.stdin.read().split() if file in os.environ.get('FILES').split(',')]))")
+            echo $updated_artifact_file
 
 # name: File Trigger Workflow
 
