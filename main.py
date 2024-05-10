@@ -1,3 +1,5 @@
 from time import sleep
+import os
 
-sleep(20)
+print("ENV=",os.environ.get("TEST"))
+sleep(10)

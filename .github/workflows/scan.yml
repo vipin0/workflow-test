@@ -34,10 +34,12 @@ jobs:
             echo "$file was changed"
             if [[ "$file" == "a.yaml" ]]; then
               echo "Afile"
+              echo "TEST=A">> $GITHUB_ENV
               python3 main.py
             fi
             if [[ "$file" == "b.yaml" ]]; then
               echo "Bfile"
+              echo "TEST=B">> $GITHUB_ENV
               python3 main.py
             fi
           done
