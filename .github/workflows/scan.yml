@@ -15,6 +15,23 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Get all changed artifact files 
+        id: changed-artifact-files
+        uses: tj-actions/changed-files@v44
+        with:
+          # Avoid using single or double quotes for multiline patterns
+          files: |
+             **.yaml
+
+      - name: List all changed files markdown files
+        if: steps.changed-artifact-files.outputs.any_changed == 'true'
+        env:
+          ALL_CHANGED_FILES: ${{ steps.changed-artifact-files.outputs.all_changed_files }}
+        run: |
+          for file in ${ALL_CHANGED_FILES}; do
+            echo "$file was changed"
+          done
+
       - name: Determine triggering file
         run: |
           echo "$(git diff --name-only)"
