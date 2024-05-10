@@ -13,10 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
 
       - name: Determine triggering file
         run: |
+          echo "$(git diff --name-only)"
           echo ARTIFACTS_FILES=$(git diff --name-only | python -c "import sys, os; print(','.join([file for file in sys.stdin.read().split() if file in os.environ.get('FILES').split(',')]))") >> $GITHUB_ENV
           echo $ARTIFACTS_FILES
 
