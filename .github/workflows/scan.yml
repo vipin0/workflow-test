@@ -32,13 +32,21 @@ jobs:
           echo "hjhk"
           for file in ${ALL_CHANGED_FILES}; do
             echo "$file was changed"
+            if [[ "$file" == "a.yaml" ]]; then
+              echo "Afile"
+              python3 main.py
+            fi
+            if [[ "$file" == "b.yaml" ]]; then
+              echo "Bfile"
+              python3 main.py
+            fi
           done
 
-      - name: Determine triggering file
-        run: |
-          echo "$(git diff --name-only)"
-          echo ARTIFACTS_FILES=$(git diff --name-only | python -c "import sys, os; print(','.join([file for file in sys.stdin.read().split() if file in os.environ.get('FILES').split(',')]))") >> $GITHUB_ENV
-          echo $ARTIFACTS_FILES
+      # - name: Determine triggering file
+      #   run: |
+      #     echo "$(git diff --name-only)"
+      #     echo ARTIFACTS_FILES=$(git diff --name-only | python -c "import sys, os; print(','.join([file for file in sys.stdin.read().split() if file in os.environ.get('FILES').split(',')]))") >> $GITHUB_ENV
+      #     echo $ARTIFACTS_FILES
 
 # name: File Trigger Workflow
 
