@@ -1,11 +1,11 @@
 name: scan
 on:
-  pull_request:
+  push:
     branches:
       - main
-    types:
-      - opened
-      - synchronize
+    # types:
+    #   - opened
+    #   - synchronize
     paths:
       - index.html
       - index2.html
